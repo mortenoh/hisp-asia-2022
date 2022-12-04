@@ -29,15 +29,16 @@ package com.example.dhis2.routes;
 
 import java.util.Map;
 
-import com.example.dhis2.domain.OrganisationUnits;
 import lombok.RequiredArgsConstructor;
 
 import org.apache.camel.builder.RouteBuilder;
 import org.springframework.stereotype.Component;
 
+import com.example.dhis2.domain.OrganisationUnits;
+
 @Component
 @RequiredArgsConstructor
-public class ReadOrgUnitsFromSourceBuilder extends RouteBuilder
+public class ReadOrgUnitsFromSourceRoute extends RouteBuilder
 {
     @Override
     public void configure()
@@ -48,12 +49,12 @@ public class ReadOrgUnitsFromSourceBuilder extends RouteBuilder
             .setHeader( "CamelDhis2.queryParams", () -> Map.of(
                 "order", "level",
                 "paging", "false",
+                "filter", "level:le:2",
                 "fields", "id,code,name,shortName,description,openingDate,parent" ) )
             .to( "dhis2://get/resource?path=organisationUnits&client=#dhis2ClientSource" )
             .unmarshal().json( OrganisationUnits.class )
             .split( simple( "${body.organisationUnits}" ) )
             .marshal().json()
-            .log( "${body}" );
-        // .to( "jms:topic:orgUnits" );
+            .to( "jms:topic:org-unit-updates" );
     }
 }
