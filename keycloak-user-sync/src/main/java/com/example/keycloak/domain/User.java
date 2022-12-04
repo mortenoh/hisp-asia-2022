@@ -25,28 +25,23 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.example.keycloak.routes;
+package com.example.keycloak.domain;
 
-import lombok.RequiredArgsConstructor;
+import javax.validation.constraints.NotEmpty;
 
-import org.apache.camel.builder.RouteBuilder;
-import org.springframework.stereotype.Component;
+import lombok.Data;
 
-import com.example.keycloak.configuration.MainProperties;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-@Component
-@RequiredArgsConstructor
-public class SyncUsersRoute extends RouteBuilder
+@Data
+@JsonIgnoreProperties( ignoreUnknown = true )
+public class User
 {
-    private final MainProperties properties;
+    @NotEmpty
+    private String id;
 
-    @Override
-    public void configure()
-        throws Exception
-    {
-        System.err.println( properties );
+    @NotEmpty
+    private String username;
 
-        from( "timer:foo?repeatCount=1" )
-            .log( "Hello" );
-    }
+    private String email;
 }

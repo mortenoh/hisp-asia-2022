@@ -25,37 +25,31 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.example.keycloak;
+package com.example.keycloak.routes;
 
-import lombok.RequiredArgsConstructor;
+import java.util.Map;
 
-import org.hisp.dhis.integration.sdk.Dhis2ClientBuilder;
-import org.hisp.dhis.integration.sdk.api.Dhis2Client;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Bean;
+import org.apache.camel.builder.RouteBuilder;
+import org.springframework.stereotype.Component;
 
-import com.example.keycloak.configuration.MainProperties;
+import com.example.keycloak.domain.Users;
 
-@SpringBootApplication
-@RequiredArgsConstructor
-@EnableConfigurationProperties( { MainProperties.class } )
-public class Main
+@Component
+public class ReadUsersFromSourceRoute extends RouteBuilder
 {
-    private final MainProperties properties;
-
-    public static void main( String[] args )
+    @Override
+    public void configure()
+        throws Exception
     {
-        SpringApplication.run( Main.class, args );
-    }
-
-    @Bean
-    public Dhis2Client dhis2ClientSource()
-    {
-        return Dhis2ClientBuilder
-            .newClient( properties.getSource().getBaseUrl(), properties.getSource().getUsername(),
-                properties.getSource().getPassword() )
-            .build();
+        from( "timer:foo?fixedRate=true&period=10000" )
+            .routeId( "Read Users" )
+            .setHeader( "CamelDhis2.queryParams", () -> Map.of(
+                "paging", "false",
+                "fields", "id,username,email" ) )
+            .to( "dhis2://get/resource?path=users&client=#dhis2ClientSource" )
+            .unmarshal().json( Users.class )
+            .split( simple( "${body.users}" ) )
+            .marshal().json()
+            .to( "jms:topic:user-updates" );
     }
 }

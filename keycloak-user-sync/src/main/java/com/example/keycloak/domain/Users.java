@@ -25,37 +25,18 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.example.keycloak;
+package com.example.keycloak.domain;
 
-import lombok.RequiredArgsConstructor;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.hisp.dhis.integration.sdk.Dhis2ClientBuilder;
-import org.hisp.dhis.integration.sdk.api.Dhis2Client;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Bean;
+import lombok.Data;
 
-import com.example.keycloak.configuration.MainProperties;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-@SpringBootApplication
-@RequiredArgsConstructor
-@EnableConfigurationProperties( { MainProperties.class } )
-public class Main
+@Data
+@JsonIgnoreProperties( ignoreUnknown = true )
+public class Users
 {
-    private final MainProperties properties;
-
-    public static void main( String[] args )
-    {
-        SpringApplication.run( Main.class, args );
-    }
-
-    @Bean
-    public Dhis2Client dhis2ClientSource()
-    {
-        return Dhis2ClientBuilder
-            .newClient( properties.getSource().getBaseUrl(), properties.getSource().getUsername(),
-                properties.getSource().getPassword() )
-            .build();
-    }
+    private List<User> users = new ArrayList<>();
 }

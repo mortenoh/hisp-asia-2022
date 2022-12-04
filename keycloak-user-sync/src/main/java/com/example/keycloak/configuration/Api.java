@@ -25,37 +25,29 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.example.keycloak;
+package com.example.keycloak.configuration;
 
-import lombok.RequiredArgsConstructor;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.hisp.dhis.integration.sdk.Dhis2ClientBuilder;
-import org.hisp.dhis.integration.sdk.api.Dhis2Client;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Bean;
+import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 
-import com.example.keycloak.configuration.MainProperties;
+import lombok.Data;
 
-@SpringBootApplication
-@RequiredArgsConstructor
-@EnableConfigurationProperties( { MainProperties.class } )
-public class Main
+@Data
+@Valid
+public class Api
 {
-    private final MainProperties properties;
+    @NotEmpty
+    private String baseUrl;
 
-    public static void main( String[] args )
-    {
-        SpringApplication.run( Main.class, args );
-    }
+    @NotEmpty
+    private Map<String, String> headers = new HashMap<>();
 
-    @Bean
-    public Dhis2Client dhis2ClientSource()
-    {
-        return Dhis2ClientBuilder
-            .newClient( properties.getSource().getBaseUrl(), properties.getSource().getUsername(),
-                properties.getSource().getPassword() )
-            .build();
-    }
+    @NotEmpty
+    private String username;
+
+    @NotEmpty
+    private String password;
 }

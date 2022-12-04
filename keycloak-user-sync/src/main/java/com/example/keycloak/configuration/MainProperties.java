@@ -32,11 +32,7 @@ import javax.validation.constraints.NotEmpty;
 
 import lombok.Data;
 
-import org.bouncycastle.asn1.cms.SCVPReqRes;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Data
 @Valid
@@ -45,24 +41,4 @@ public class MainProperties
 {
     @NotEmpty
     private Api source;
-
-    @NotEmpty
-    private Api target;
-}
-
-@Data
-@Valid
-class Api
-{
-    @NotEmpty
-    private String baseUrl;
-
-    @NotEmpty
-    private Map<String, String> headers = new HashMap<>();
-
-    @NotEmpty
-    private String username;
-
-    @NotEmpty
-    private String password;
 }
