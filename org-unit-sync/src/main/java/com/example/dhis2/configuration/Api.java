@@ -25,34 +25,19 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.example.keycloak.configuration;
+package com.example.dhis2.configuration;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 
 import lombok.Data;
 
-import org.bouncycastle.asn1.cms.SCVPReqRes;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-
-import java.util.HashMap;
-import java.util.Map;
-
 @Data
 @Valid
-@ConfigurationProperties( prefix = "dhis2" )
-public class MainProperties
-{
-    @NotEmpty
-    private Api source;
-
-    @NotEmpty
-    private Api target;
-}
-
-@Data
-@Valid
-class Api
+public class Api
 {
     @NotEmpty
     private String baseUrl;

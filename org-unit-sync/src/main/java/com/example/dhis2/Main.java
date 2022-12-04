@@ -27,18 +27,44 @@
  */
 package com.example.dhis2;
 
+import lombok.RequiredArgsConstructor;
+
+import org.hisp.dhis.integration.sdk.Dhis2ClientBuilder;
+import org.hisp.dhis.integration.sdk.api.Dhis2Client;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 
 import com.example.dhis2.configuration.MainProperties;
 
 @SpringBootApplication
+@RequiredArgsConstructor
 @EnableConfigurationProperties( { MainProperties.class } )
 public class Main
 {
+    private final MainProperties properties;
+
     public static void main( String[] args )
     {
         SpringApplication.run( Main.class, args );
+    }
+
+    @Bean
+    public Dhis2Client dhis2ClientSource()
+    {
+        return Dhis2ClientBuilder
+            .newClient( properties.getSource().getBaseUrl(), properties.getSource().getUsername(),
+                properties.getSource().getPassword() )
+            .build();
+    }
+
+    @Bean
+    public Dhis2Client dhis2ClientTarget()
+    {
+        return Dhis2ClientBuilder
+            .newClient( properties.getTarget().getBaseUrl(), properties.getTarget().getUsername(),
+                properties.getTarget().getPassword() )
+            .build();
     }
 }

@@ -27,24 +27,33 @@
  */
 package com.example.dhis2.routes;
 
+import java.util.Map;
+
+import com.example.dhis2.domain.OrganisationUnits;
 import lombok.RequiredArgsConstructor;
 
 import org.apache.camel.builder.RouteBuilder;
 import org.springframework.stereotype.Component;
 
-import com.example.dhis2.configuration.MainProperties;
-
 @Component
 @RequiredArgsConstructor
-public class OrgUnitSyncRoute extends RouteBuilder
+public class ReadOrgUnitsFromSourceBuilder extends RouteBuilder
 {
-    private final MainProperties properties;
-
     @Override
     public void configure()
         throws Exception
     {
-        from( "timer:foo?repeatCount=1" )
-            .log( "Hello" );
+        from( "timer:foo?fixedRate=true&period=10000" )
+            .routeId( "Read OrgUnits" )
+            .setHeader( "CamelDhis2.queryParams", () -> Map.of(
+                "order", "level",
+                "paging", "false",
+                "fields", "id,code,name,shortName,description,openingDate,parent" ) )
+            .to( "dhis2://get/resource?path=organisationUnits&client=#dhis2ClientSource" )
+            .unmarshal().json( OrganisationUnits.class )
+            .split( simple( "${body.organisationUnits}" ) )
+            .marshal().json()
+            .log( "${body}" );
+        // .to( "jms:topic:orgUnits" );
     }
 }

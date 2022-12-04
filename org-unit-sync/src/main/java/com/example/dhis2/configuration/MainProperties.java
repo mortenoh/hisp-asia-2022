@@ -40,22 +40,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class MainProperties
 {
     @NotEmpty
-    private Dhis2 source;
+    private Api source;
 
     @NotEmpty
-    private Dhis2 target;
-}
-
-@Data
-@Valid
-class Dhis2
-{
-    @NotEmpty
-    private String baseUrl;
-
-    @NotEmpty
-    private String username;
-
-    @NotEmpty
-    private String password;
+    private Api target;
 }

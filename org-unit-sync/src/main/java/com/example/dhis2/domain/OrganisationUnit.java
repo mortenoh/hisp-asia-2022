@@ -25,44 +25,27 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.example.keycloak.configuration;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
+package com.example.dhis2.domain;
 
 import lombok.Data;
 
-import org.bouncycastle.asn1.cms.SCVPReqRes;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-
-import java.util.HashMap;
-import java.util.Map;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Data
-@Valid
-@ConfigurationProperties( prefix = "dhis2" )
-public class MainProperties
+@JsonIgnoreProperties( ignoreUnknown = true )
+public class OrganisationUnit
 {
-    @NotEmpty
-    private Api source;
+    private String id;
 
-    @NotEmpty
-    private Api target;
-}
+    private String code;
 
-@Data
-@Valid
-class Api
-{
-    @NotEmpty
-    private String baseUrl;
+    private String name;
 
-    @NotEmpty
-    private Map<String, String> headers = new HashMap<>();
+    private String shortName;
 
-    @NotEmpty
-    private String username;
+    private String description;
 
-    @NotEmpty
-    private String password;
+    private String openingDate;
+
+    private OrganisationUnit parent;
 }
