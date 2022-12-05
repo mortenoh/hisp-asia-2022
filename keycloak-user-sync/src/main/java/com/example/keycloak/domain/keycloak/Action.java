@@ -25,32 +25,9 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.example.keycloak.routes;
+package com.example.keycloak.domain.keycloak;
 
-import java.util.Map;
-
-import org.apache.camel.builder.RouteBuilder;
-import org.springframework.stereotype.Component;
-
-import com.example.keycloak.domain.dhis2.Users;
-
-@Component
-public class ReadUsersFromSourceRoute extends RouteBuilder
+public enum Action
 {
-    @Override
-    public void configure()
-        throws Exception
-    {
-        from( "timer:foo?repeatCount=1" )
-            .routeId( "Read Users" )
-            .setHeader( "CamelDhis2.queryParams", () -> Map.of(
-                "paging", "false",
-                "filter", "externalAuth:eq:true",
-                "fields", "id,username,email,disabled" ) )
-            .to( "dhis2://get/resource?path=users&client=#dhis2ClientSource" )
-            .unmarshal().json( Users.class )
-            .split( simple( "${body.users}" ) )
-            .marshal().json()
-            .to( "jms:topic:user-updates" );
-    }
+    UPDATE_PASSWORD
 }

@@ -27,15 +27,23 @@
  */
 package com.example.keycloak.routes;
 
+import lombok.RequiredArgsConstructor;
+
+import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
 import org.springframework.stereotype.Component;
 
+import com.example.keycloak.configuration.MainProperties;
 import com.example.keycloak.domain.dhis2.User;
+import com.example.keycloak.domain.keycloak.Action;
 import com.example.keycloak.domain.keycloak.Credential;
 
 @Component
+@RequiredArgsConstructor
 public class WriteUsersToTargetRoute extends RouteBuilder
 {
+    private final MainProperties properties;
+
     @Override
     public void configure()
         throws Exception
@@ -48,13 +56,20 @@ public class WriteUsersToTargetRoute extends RouteBuilder
 
                 com.example.keycloak.domain.keycloak.User keyCloakUser = new com.example.keycloak.domain.keycloak.User();
                 keyCloakUser.setUsername( user.getUsername() );
+                keyCloakUser.setEmail( user.getEmail() );
                 keyCloakUser.getCredentials().add( Credential.builder()
                     .value( "Password@DHIS2" )
                     .build() );
+                keyCloakUser.getRequiredActions().add( Action.UPDATE_PASSWORD );
                 keyCloakUser.setEnabled( !user.isDisabled() );
 
                 x.getIn().setBody( keyCloakUser );
             } )
+            .marshal().json()
+            .setHeader( Exchange.HTTP_METHOD, constant( org.apache.camel.component.http.HttpMethods.POST ) )
+            .setHeader( "Authorization", constant( "Bearer " + properties.getTarget().getToken() ) )
+            .setHeader( "Content-Type", constant( "application/json" ) )
+            .to( properties.getTarget().getBaseUrl() + "/users" )
             .log( "${body}" );
     }
 }

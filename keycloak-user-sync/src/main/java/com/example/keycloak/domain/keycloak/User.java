@@ -43,8 +43,13 @@ public class User
     @NotEmpty
     private String username;
 
+    private String email;
+
     @NotEmpty
     private List<Credential> credentials = new ArrayList<>();
+
+    @NotEmpty
+    private List<Action> requiredActions = new ArrayList<>();
 
     private boolean enabled;
 }
