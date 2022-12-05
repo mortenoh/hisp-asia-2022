@@ -45,9 +45,7 @@ public class Api
     @NotEmpty
     private Map<String, String> headers = new HashMap<>();
 
-    @NotEmpty
     private String username;
 
-    @NotEmpty
     private String password;
 }

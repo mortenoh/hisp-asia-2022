@@ -30,7 +30,8 @@ package com.example.keycloak.routes;
 import org.apache.camel.builder.RouteBuilder;
 import org.springframework.stereotype.Component;
 
-import com.example.keycloak.domain.User;
+import com.example.keycloak.domain.dhis2.User;
+import com.example.keycloak.domain.keycloak.Credential;
 
 @Component
 public class WriteUsersToTargetRoute extends RouteBuilder
@@ -42,6 +43,18 @@ public class WriteUsersToTargetRoute extends RouteBuilder
         from( "jms:topic:user-updates" )
             .routeId( "Write User to KeyCloak" )
             .unmarshal().json( User.class )
+            .process( x -> {
+                User user = x.getIn().getBody( User.class );
+
+                com.example.keycloak.domain.keycloak.User keyCloakUser = new com.example.keycloak.domain.keycloak.User();
+                keyCloakUser.setUsername( user.getUsername() );
+                keyCloakUser.getCredentials().add( Credential.builder()
+                    .value( "Password@DHIS2" )
+                    .build() );
+                keyCloakUser.setEnabled( !user.isDisabled() );
+
+                x.getIn().setBody( keyCloakUser );
+            } )
             .log( "${body}" );
     }
 }

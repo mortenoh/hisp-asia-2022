@@ -25,32 +25,26 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.example.keycloak.routes;
+package com.example.keycloak.domain.keycloak;
 
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.apache.camel.builder.RouteBuilder;
-import org.springframework.stereotype.Component;
+import javax.validation.constraints.NotEmpty;
 
-import com.example.keycloak.domain.dhis2.Users;
+import lombok.Data;
 
-@Component
-public class ReadUsersFromSourceRoute extends RouteBuilder
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@Data
+@JsonIgnoreProperties( ignoreUnknown = true )
+public class User
 {
-    @Override
-    public void configure()
-        throws Exception
-    {
-        from( "timer:foo?fixedRate=true&period=10000" )
-            .routeId( "Read Users" )
-            .setHeader( "CamelDhis2.queryParams", () -> Map.of(
-                "paging", "false",
-                "filter", "externalAuth:eq:true",
-                "fields", "id,username,email,disabled" ) )
-            .to( "dhis2://get/resource?path=users&client=#dhis2ClientSource" )
-            .unmarshal().json( Users.class )
-            .split( simple( "${body.users}" ) )
-            .marshal().json()
-            .to( "jms:topic:user-updates" );
-    }
+    @NotEmpty
+    private String username;
+
+    @NotEmpty
+    private List<Credential> credentials = new ArrayList<>();
+
+    private boolean enabled;
 }

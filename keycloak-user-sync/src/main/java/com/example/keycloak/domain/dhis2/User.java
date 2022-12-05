@@ -25,7 +25,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.example.keycloak.domain;
+package com.example.keycloak.domain.dhis2;
 
 import javax.validation.constraints.NotEmpty;
 
@@ -44,4 +44,6 @@ public class User
     private String username;
 
     private String email;
+
+    private boolean disabled;
 }

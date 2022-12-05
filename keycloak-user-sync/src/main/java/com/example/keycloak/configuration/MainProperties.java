@@ -41,4 +41,7 @@ public class MainProperties
 {
     @NotEmpty
     private Api source;
+
+    @NotEmpty
+    private KeyCloakApi target;
 }
